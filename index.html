@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evolution of the Internet</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
+
+<style>
+* {margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+
+body {
+  background:#050505;
+  color:white;
+  overflow-x:hidden;
+}
+
+/* Canvas stars */
+canvas {
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-2;
+}
+
+/* Loader */
+#loader {
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:black;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+/* Progress bar */
+#progress {
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  background:cyan;
+  width:0%;
+  z-index:999;
+}
+
+/* Sections */
+section {
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:40px 20px;
+  position:relative;
+}
+
+h1 {font-size:3rem;margin-bottom:15px;}
+p {max-width:700px;opacity:0.85;line-height:1.6;}
+
+/* Animation */
+.hidden {opacity:0;transform:translateY(60px);transition:1s;}
+.show {opacity:1;transform:translateY(0);}
+
+/* Cards */
+.cards {
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:20px;
+}
+
+.card {
+  padding:20px;
+  border-radius:15px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(12px);
+  transition:0.3s;
+  cursor:pointer;
+}
+
+.card:hover {
+  transform:scale(1.1);
+  background:rgba(0,255,255,0.2);
+}
+
+/* Timeline */
+.timeline {
+  position:fixed;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.timeline a {
+  display:block;
+  width:10px;
+  height:10px;
+  background:white;
+  margin:10px;
+  border-radius:50%;
+  opacity:0.5;
+}
+
+/* Button */
+button {
+  margin-top:20px;
+  padding:10px 20px;
+  border:none;
+  border-radius:10px;
+  background:cyan;
+  cursor:pointer;
+}
+
+/* Audio button */
+#audioBtn {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  z-index:999;
+}
+
+@media(max-width:768px){
+  h1{font-size:2rem;}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<div id="loader">Loading Experience...</div>
+<div id="progress"></div>
+
+<button id="audioBtn" onclick="toggleAudio()">🔊 Sound</button>
+
+<!-- Audio -->
+<audio id="bgAudio" loop>
+  <source src="space.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Timeline -->
+<div class="timeline">
+  <a href="#s1"></a>
+  <a href="#s2"></a>
+  <a href="#s3"></a>
+  <a href="#s4"></a>
+  <a href="#s5"></a>
+</div>
+
+<!-- Sections -->
+<section id="s1" class="hidden">
+  <h1>🌐 Internet Journey</h1>
+  <p>Scroll through time and explore the digital revolution.</p>
+</section>
+
+<section id="s2" class="hidden">
+  <h1>ARPANET</h1>
+  <p id="typing"></p>
+</section>
+
+<section id="s3" class="hidden">
+  <h1>Dot-com Boom</h1>
+  <div class="cards">
+    <div class="card">Amazon</div>
+    <div class="card">Yahoo</div>
+    <div class="card" onclick="alert('Google changed everything!')">Google</div>
+  </div>
+</section>
+
+<section id="s4" class="hidden">
+  <h1>Social Media</h1>
+  <div class="cards">
+    <div class="card">Facebook</div>
+    <div class="card">Instagram</div>
+    <div class="card">Twitter</div>
+  </div>
+</section>
+
+<section id="s5" class="hidden">
+  <h1>Web3 Future</h1>
+  <p>Decentralized, secure, and user-owned internet.</p>
+
+  <button onclick="toggleMode()">Toggle Light Mode</button>
+</section>
+
+<script>
+// Loader
+window.onload=()=>document.getElementById("loader").style.display="none";
+
+// Scroll reveal
+const obs=new IntersectionObserver(e=>{
+  e.forEach(x=>{if(x.isIntersecting)x.target.classList.add("show")})
+});
+document.querySelectorAll(".hidden").forEach(el=>obs.observe(el));
+
+// Progress
+window.onscroll=()=>{
+  let sc=document.documentElement.scrollTop;
+  let h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+  document.getElementById("progress").style.width=(sc/h)*100+"%";
+};
+
+// Typing
+let t="ARPANET was the foundation of modern internet connecting computers globally.";
+let i=0;
+function type(){
+ if(i<t.length){
+  document.getElementById("typing").innerHTML+=t.charAt(i);
+  i++; setTimeout(type,30);
+ }
+}
+type();
+
+// Stars animation
+const c=document.getElementById("stars");
+const ctx=c.getContext("2d");
+c.width=window.innerWidth;
+c.height=window.innerHeight;
+
+let stars=[];
+for(let i=0;i<100;i++){
+ stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2});
+}
+
+function draw(){
+ ctx.clearRect(0,0,c.width,c.height);
+ ctx.fillStyle="white";
+ stars.forEach(s=>{
+   ctx.beginPath();
+   ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+   ctx.fill();
+   s.y+=0.3;
+   if(s.y>c.height)s.y=0;
+ });
+ requestAnimationFrame(draw);
+}
+draw();
+
+// Audio
+let audio = document.getElementById("bgAudio");
+let isPlaying = false;
+
+audio.volume = 0.3;
+
+function toggleAudio(){
+  if(!isPlaying){
+    audio.play();
+    isPlaying = true;
+    document.getElementById("audioBtn").innerText = "🔇 Mute";
+  } else {
+    audio.pause();
+    isPlaying = false;
+    document.getElementById("audioBtn").innerText = "🔊 Sound";
+  }
+}
+
+function toggleMode(){
+  if(document.body.style.background === "white"){
+    document.body.style.background = "#050505";
+    document.body.style.color = "white";
+  } else {
+    document.body.style.background = "white";
+    document.body.style.color = "black";
+  }
+}
+</script>
+
+</body>
+</html>
